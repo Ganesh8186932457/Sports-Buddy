@@ -1,0 +1,147 @@
+index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sports Buddy</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+
+  <h1>Welcome to Sports Buddy</h1>
+
+  <div>
+  <a href="login.html">Login</a> |
+  <a href="dashboard.html">User Dashboard</a> |
+  <a href="admin.html">Admin Panel</a>
+  </div>
+
+  <img src="wallpaper.jpg" alt="image" width="1580px" height="660px">
+
+
+  <script src="index.js"></script>
+</body>
+</html>
+
+admin.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="imp">
+  <h2>Admin Panel</h2>
+  <input id="category" placeholder="Add Sport Category" /> <br>
+  <button onclick="addCategory()">Add Category</button>
+  <div id="categories"></div>
+    </div>
+
+  <script src="firebase.js"></script>
+  <script src="logger.js"></script>
+  <script>
+    function addCategory() {
+      const category = document.getElementById("category").value;
+      db.collection("categories").add({ name: category })
+        .then(() => logAction("Category added: " + category));
+    }
+
+    db.collection("categories").onSnapshot(snapshot => {
+      document.getElementById("categories").innerHTML =
+        snapshot.docs.map(doc => `<p>${doc.data().name}</p>`).join('');
+    });
+  </script>
+</body>
+
+  dashboard.html
+
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>User Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+ <div class="dash">
+  <h2>User Dashboard</h2>
+  <div>
+  <input id="sport" placeholder="Sport" /> <br>
+  <input id="location" placeholder="Location" /> <br>
+  <input id="datetime" placeholder="Date & Time" /> <br>
+  <button onclick="addEvent()">Add Event</button>
+  <div id="events"></div>
+  </div>
+ </div>
+
+
+
+  <script src="firebase.js"></script>
+  <script src="logger.js"></script>
+  <script>
+    function addEvent() {
+      const sport = document.getElementById("sport").value;
+      const location = document.getElementById("location").value;
+      const datetime = document.getElementById("datetime").value;
+      db.collection("events").add({ sport, location, datetime })
+        .then(() => {
+          logAction("Event added: " + sport);
+          alert("Event added successfully");
+        });
+    }
+
+    db.collection("events").onSnapshot(snapshot => {
+      const eventList = snapshot.docs.map(doc => `<p>${doc.data().sport} @ ${doc.data().location}</p>`).join('');
+      document.getElementById("events").innerHTML = eventList;
+    });
+  </script>
+</body>
+</html>
+
+login.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login</title>
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+  <div class="main">
+  <h2>Login to Sports Buddy</h2>
+  <div class="part">
+  <input type="email" id="email" placeholder="Email" /> <br>
+  <input type="password" id="password" placeholder="Password" /> <br>
+  <button onclick="login()">Login</button>
+  <button onclick="register()">Register</button>
+  </div>
+  </div>
+  <script src="firebase.js"></script>
+  <script src="logger.js"></script>
+  <script>
+    function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      auth.signInWithEmailAndPassword(email, password)
+        .then(user => logAction("User logged in"))
+        .catch(error => console.error(error.message));
+    }
+
+    function register() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(user => logAction("New user registered"))
+        .catch(error => console.error(error.message));
+    }
+  </script>
+</body>
+</html>
